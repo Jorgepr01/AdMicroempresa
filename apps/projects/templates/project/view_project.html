@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="display-9 text-center mt-2">Vista del proyecto</h1>
+<hr>
+<div class="d-flex flex-wrap ">
+{% for project in project %}
+
+<div class="card card-body mx-3 my-3">
+    <h5 class="card-header ">{{project.team.name}}</h5>
+    <div class="card-body">
+      <h5 class="card-title">{{project.name}}</h5>
+        <p class="card-text">{{project.description}}</p>
+      <a href="{% url "manage_project" project.id%}" class="btn btn-primary">Manage</a>
+      <a href="{% url "view_project_versions" project.id%}" class="btn btn-primary">view versions</a>
+    </div>
+    <div class="card-footer text-muted">
+        {{project.start_date}}--{{project.end_date}}  ##{{project.created_at}}
+      </div>
+  </div>
+<hr>
+{% endfor %}
+
+</div>
+
+{% endblock  %}

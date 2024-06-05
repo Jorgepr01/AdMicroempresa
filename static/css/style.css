@@ -1,0 +1,12 @@
+.avatar {
+    position: absolute;
+    inset: 0px auto auto 0px;
+    margin: 0px;
+    transform: translate(-112px, 34px);
+}
+ 
+@media (max-width: 990px) {
+    .avatar {
+        transform: rotate(0turn);
+    }
+}

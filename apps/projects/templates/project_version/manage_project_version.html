@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-2">
+<h1 class="display-9 text-center mt-2">Manage projects Versions</h1>
+{{error}}
+
+<form action={% url "update_project_version" project_version.project.id project_version.id %} method='post'>
+    {% csrf_token %}
+    {{form}}
+    <input type="submit" value="Update" class="btn btn-light mt-2">
+</form>
+
+
+
+<form action={% url "delete_project_version"  project_version.project.id project_version.id  %} method='post'>
+    {% csrf_token %}
+    <input type="submit" value="Delete" class="btn btn-danger mt-2">
+</form>
+
+{% endblock  %}

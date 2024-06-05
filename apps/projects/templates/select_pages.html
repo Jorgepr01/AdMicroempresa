@@ -1,0 +1,23 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="container mt-2">
+
+<label for="seleccionarPagina" class="form-label display-6">Selecciona un {{seleccion}}</label>
+<select id="seleccionarPagina" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+    <option value="">Selecciona {{seleccion}} corespondiente</option>
+    {% for project in projects %}
+    <option value="{% url redirect_funcion project.id %}">{{ project.name }}</option>
+    {% endfor %}
+</select>
+</div>
+<script>
+// Función para redireccionar
+document.getElementById("seleccionarPagina").onchange = function() {
+    var paginaSeleccionada = this.value;
+    if (paginaSeleccionada !== "") {
+        window.location.href = paginaSeleccionada;
+    }
+};
+</script>
+
+{% endblock %}

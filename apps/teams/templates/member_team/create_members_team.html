@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="display-9 text-center mt-2">Create Member</h1>
+<hr>
+<form method="post" class="row g-3 w-50 p-3 mx-auto">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+{{ error }}
+{% endblock  %}

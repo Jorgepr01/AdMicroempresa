@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+<h1 class="display-9 text-center mt-2">Vista del proyecto versiones</h1>
+
+<div class="card card-body mx-3 my-3">
+    <h5 class="card-header ">{{project.team.name}}</h5>
+    <div class="card-body">
+      <h5 class="card-title">{{project.name}}</h5>
+        <p class="card-text">{{project.description}}</p>
+      <a href="{% url "manage_project" project.id%}" class="btn btn-primary">Manage</a>
+      <a href="{% url "create_project_version" project.id %}" class="btn btn-primary">create versions</a>
+    </div>
+    <div class="card-footer text-muted">
+        {{project.start_date}}--{{project.end_date}}  ##{{project.created_at}}
+      </div>
+  </div>
+
+
+<hr>
+<div class="d-flex flex-wrap container">
+
+{% for version in versions %}
+<hr>
+<div class="card card-body mx-3 my-3">
+    <h5 class="card-header ">Version={{version.version_number}}</h5>
+    <div class="card-body">
+      <h5 class="card-title">{{project.name}}</h5>
+        <p class="card-text">{{version.notes}}</p>
+      <a href="{% url "manage_project_version" project.id version.id %}" class="btn btn-primary">Manage</a>
+      <a href="{% url "view_tasks" %}" class="btn btn-secondary text-white">View Tasks</a>
+    </div>
+    <div class="card-footer text-muted">
+        {{version.created_at}}
+      </div>
+  </div>
+
+{% endfor %}
+</div>
+</div>
+
+{% endblock  %}

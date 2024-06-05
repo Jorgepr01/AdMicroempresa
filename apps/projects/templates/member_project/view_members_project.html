@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="display-9 text-center mt-2">Members proyects</h1>
+
+<div class="card card-body mx-3 my-2">
+    <h3 class="card-header ">{{project.name}}</h3>
+    <div class="card-body">
+      {% comment %} <h5 class="card-title">{{team.name}}</h5> {% endcomment %}
+      {% comment %} <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> {% endcomment %}
+      <a href="{% url 'manage_project' project.id %}" class="btn btn-primary">Manage</a>
+      <a href="{% url 'create_members_project' project.id %}" class="btn btn-primary">Add Member</a>
+    </div>
+    <div class="card-footer text-muted">
+        <b>Fecha de creación: {{project.created_at}}</b>
+        <br>
+        <span>Fecha de actualización: {{project.updated_at}}</span>
+      </div>
+  </div>    
+<hr>
+
+<h3 class="display-11 mt-2 mx-3 text-center">Members</h3>
+<div class="d-flex flex-wrap container">
+
+{% for member in members %}
+
+<div class="card card-body mx-3 my-2">
+    <h4 class="card-header ">{{member.user.username}}</h4>
+    <div class="card-body">
+      <h6 class="card-title">{{member.role}}</h6>
+      {% comment %} <p class="card-text">{{member.role}}</p> {% endcomment %}
+      <a href="{% url "manage_members_project" project.id member.id %}" class="btn btn-primary">Manage</a>
+    </div>
+    <div class="card-footer text-muted">
+        {{project.created_at}}
+      </div>
+  </div>
+
+{% comment %} {{member.user.username}}
+{{member.team}}
+{{member.role}}
+<a href="{% url "manage_members_team" team.id member.id %}">Manage</a> {% endcomment %}
+
+{% endfor %}
+
+</div>
+
+</div>
+{% endblock  %}
