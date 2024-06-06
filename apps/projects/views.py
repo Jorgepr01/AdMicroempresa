@@ -5,7 +5,6 @@ from apps.projects.models import Project,ProjectVersion,ProjectMember
 from django.utils import timezone
 
 
-# Create your views here.
 
 def index(request):
     return render(request, 'index.html')
@@ -26,6 +25,7 @@ def index(request):
 #         return redirect("view_project")
 
 
+@login_required
 def create_projects(request):
     if request.method == 'GET':
         return render(request, 'project/create_project.html', {
@@ -37,6 +37,10 @@ def create_projects(request):
             newtasks = form.save()
             # newtasks.user= request.user
             newtasks.save()
+            print(newtasks.id)
+            menbAdmin=ProjectMember(user=request.user,project_id=newtasks.id,role='Admin')
+            print(menbAdmin)
+            menbAdmin.save()
             return redirect('view_project')
         except ValueError:
             return render(request,"project/create_project.html",{
@@ -50,6 +54,8 @@ def view_project(request):
     project=Project.objects.all()
     return render(request, 'project/view_project.html',{'project':project})
 
+
+@login_required
 def manage_project(request,project_id):
     if request.method=='GET':
         if project_id==0:
@@ -72,6 +78,8 @@ def manage_project(request,project_id):
 
 #API para actualizar la tarea
 
+
+@login_required
 def update_project(request,project_id):
     try:
         project=get_object_or_404(Project,pk=project_id)
@@ -87,7 +95,8 @@ def update_project(request,project_id):
             'error':'error actualizar tareas'
         })
 
-    
+
+@login_required
 def complete_project(request,project_id):
     # project=get_object_or_404(Project,pk=project_id,user=request.user)
     project=get_object_or_404(Project,pk=project_id)
@@ -100,6 +109,7 @@ def complete_project(request,project_id):
 
 #API para eliminar la tarea
 
+@login_required
 def delete_project(request,project_id):
     project=get_object_or_404(Project,pk=project_id)
     if request.method =='POST':
@@ -107,6 +117,7 @@ def delete_project(request,project_id):
         return redirect('view_project')
 
 
+@login_required
 def view_project_versions(request,project_id):
     if request.method=='GET':
         if project_id==0:
@@ -125,7 +136,9 @@ def view_project_versions(request,project_id):
                 'project':project,
                 'versions':versions
                 })
-        
+
+
+@login_required  
 def create_project_version(request,project_id):
     if request.method=='GET':
         if project_id==0:
@@ -143,6 +156,7 @@ def create_project_version(request,project_id):
 
     else:
         try:
+           
             form = formProjectVersions(request.POST)
             newversion = form.save()
             newversion.project=get_object_or_404(Project,pk=project_id)
@@ -156,9 +170,7 @@ def create_project_version(request,project_id):
 
 
 
-
-
-
+@login_required
 def manage_project_version(request,project_id,project_version_id):
     if request.method=='GET':
         project_version=get_object_or_404(ProjectVersion,pk=project_version_id,project=project_id)
@@ -174,7 +186,7 @@ def manage_project_version(request,project_id,project_version_id):
 
 
 #API para actualizar la tarea
-
+@login_required
 def update_project_version(request,project_id,project_version_id):
     try:
         project_version=get_object_or_404(ProjectVersion,pk=project_version_id,project_id=project_id)
@@ -192,7 +204,7 @@ def update_project_version(request,project_id,project_version_id):
 
     
 #API para eliminar la tarea
-
+@login_required
 def delete_project_version(request,project_id,project_version_id):
     project_version=get_object_or_404(ProjectVersion,pk=project_version_id,project_id=project_version_id)
     if request.method =='POST':
@@ -203,7 +215,7 @@ def delete_project_version(request,project_id,project_version_id):
 
 
 # crear los members del proyecto
-
+@login_required
 def view_menbers_project(request,project_id):
     if request.method == 'GET':
         if project_id==0:
@@ -223,7 +235,7 @@ def view_menbers_project(request,project_id):
 
 
 
-
+@login_required
 def create_members_project(request,project_id):
     if request.method == 'GET':
         if project_id==0:
@@ -240,12 +252,13 @@ def create_members_project(request,project_id):
             })
     else:
         try:
+            
             form = FormProjectMember(request.POST)
-            newmember = form.save()
-            # team=get_object_or_404(Team,pk=team_id)
-            # newmember.team=team
-            newmember.save()
-            return redirect('view_menbers_project',project_id)
+            project = get_object_or_404(Project, id=project_id)
+            new_member = form.save(commit=False)
+            new_member.project = project
+            new_member.save()
+            return redirect('view_project')
         except ValueError:
             return render(request,"member_project/create_members_project.html",{
             'form':FormProjectMember,
@@ -253,6 +266,7 @@ def create_members_project(request,project_id):
             })
 
 
+@login_required
 def manage_members_project(request,project_id,member_id):
     if request.method == 'GET':
         if project_id==0:
@@ -271,4 +285,31 @@ def manage_members_project(request,project_id,member_id):
                 'member':member,
                 'form':form
             })
-        
+
+
+
+def update_members_project(request,project_id,member_id):
+    try:
+        project=get_object_or_404(Project,pk=project_id)
+        member=get_object_or_404(ProjectMember,pk=member_id)
+        form = FormProjectMember(request.POST,instance=member)
+        form.save()
+        print(request.POST)
+        return redirect('view_menbers_project',project_id)
+    except ValueError:
+        return render(request,'member_project/manage_members_project.html',
+        {
+            'project':project,
+            'member':member,
+            'form':form,
+            'error':'error actualizar miembros'
+        })
+    
+
+
+def delete_members_project(request,project_id,member_id):
+    if request.method == 'POST':
+        member=get_object_or_404(ProjectMember,pk=member_id,project_id=project_id)
+        member.delete()
+        return redirect('view_menbers_project',project_id)
+

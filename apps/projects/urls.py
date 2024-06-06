@@ -19,4 +19,6 @@ urlpatterns = [
     path("project/member/<int:project_id>", views.view_menbers_project, name="view_menbers_project"),
     path("project/member/create/<int:project_id>", views.create_members_project, name="create_members_project"),
     path("project/member/manage/<int:project_id>/<int:member_id>", views.manage_members_project, name="manage_members_project"),
+    path("project/member/update/<int:project_id>/<int:member_id>", views.update_members_project, name="update_members_project"),
+    path("project/member/delete/<int:project_id>/<int:member_id>", views.delete_members_project, name="delete_members_project"),
 ]

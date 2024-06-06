@@ -6,14 +6,14 @@
 <h1 class="display-9 text-center mt-2">Manage Team</h1>
 {{error}}
 
-<form action={% url "update_members_team" team.id member.id %} method='post'>
+<form action={% url "update_members_project" project.id member.id %} method='post'>
     {% csrf_token %}
     {{form}}
     <input type="submit" value="Update" class="btn btn-light mt-2">
 </form>
 
 
-<form action={% url "delete_members_team" member.team.id member.id %} method='post'>
+<form action={% url "delete_members_project" project.id member.id %} method='post'>
     {% csrf_token %}
     <input type="submit" value="Delete" class="btn btn-danger mt-2">
 </form>

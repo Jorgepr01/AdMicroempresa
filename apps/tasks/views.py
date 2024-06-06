@@ -7,10 +7,12 @@ from django.utils import timezone
 
 
 # Create your views here.
+@login_required
 def view_tasks(request):
     tasks=Task.objects.all()
     return render(request, 'tasks/view_tasks.html', {'tasks':tasks})
 
+@login_required
 def create_task(request):
     if request.method == 'POST':
         try:
@@ -27,6 +29,8 @@ def create_task(request):
     else:
         return render(request, 'tasks/create_task.html', {'form':TaskForm})
     
+
+@login_required
 def manage_task(request,taks_id):
     if request.method=='GET':
         if taks_id==0:
@@ -46,6 +50,7 @@ def manage_task(request,taks_id):
             })
         
 
+@login_required
 def update_task(request,taks_id):
     try:
         tasks=get_object_or_404(Task,pk=taks_id)
@@ -61,7 +66,8 @@ def update_task(request,taks_id):
             'error':'error actualizar tareas'
         })
 
-    
+
+@login_required
 def complete_task(request,taks_id):
     # project=get_object_or_404(Project,pk=project_id,user=request.user)
     tasks=get_object_or_404(Task,pk=taks_id)
@@ -71,6 +77,8 @@ def complete_task(request,taks_id):
         tasks.save()
         return redirect('view_tasks')
     
+
+@login_required
 def delete_task(request,taks_id):
     tasks=get_object_or_404(Task,pk=taks_id)
     if request.method =='POST':

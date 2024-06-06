@@ -30,9 +30,10 @@ ProyectoFormSet = modelformset_factory(Project, form=formProjects, extra=0)
 class formProjectVersions(ModelForm):
     class Meta:
         model = ProjectVersion
-        fields = ['project','version_number','release_date','notes']
+        # fields = ['project','version_number','release_date','notes']
+        fields = ['version_number','release_date','notes']
         widgets = {
-            'project': forms.Select(attrs={'class': 'form-select'}),
+            # 'project': forms.Select(attrs={'class': 'form-select'}),
             'version_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Version Number'}),
             'release_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'notes': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Notes', 'rows': 4}),
@@ -41,9 +42,10 @@ class formProjectVersions(ModelForm):
 class FormProjectMember(forms.ModelForm):
     class Meta:
         model = ProjectMember
-        fields = ['user','project','role']
+        # fields = ['user','project','role']
+        fields = ['user','role']
         widgets = {
             'user': forms.Select(attrs={'class': 'form-select'}),
-            'team': forms.Select(attrs={'class': 'form-select'}),
+            # 'project': forms.Select(attrs={'class': 'form-select'}),
             'role': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Role'}),
         }
