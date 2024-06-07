@@ -51,7 +51,9 @@ def create_projects(request):
     
 @login_required
 def view_project(request):
-    project=Project.objects.all()
+    miprojects=ProjectMember.objects.filter(user=request.user).values_list('project_id', flat=True)
+    print(miprojects)
+    project=Project.objects.filter(id__in=miprojects)
     return render(request, 'project/view_project.html',{'project':project})
 
 
@@ -59,7 +61,8 @@ def view_project(request):
 def manage_project(request,project_id):
     if request.method=='GET':
         if project_id==0:
-            projects=Project.objects.all()
+            miprojects=ProjectMember.objects.filter(user=request.user).values_list('project_id', flat=True)
+            projects=Project.objects.filter(id__in=miprojects)
             return render(request,"select_pages.html",{
                 'projects':projects,
                 'redirect_funcion':'manage_project',
@@ -67,7 +70,8 @@ def manage_project(request,project_id):
 
             })
         else:
-            project=get_object_or_404(Project,pk=project_id)
+            miprojects=ProjectMember.objects.filter(user=request.user).values_list('project_id', flat=True)
+            project=get_object_or_404(Project,pk=project_id,id__in=miprojects)
             form = formProjects(instance=project)
             return render(request,'project/manage_project.html',
             {
@@ -82,7 +86,8 @@ def manage_project(request,project_id):
 @login_required
 def update_project(request,project_id):
     try:
-        project=get_object_or_404(Project,pk=project_id)
+        miprojects=ProjectMember.objects.filter(user=request.user).values_list('project_id', flat=True)
+        project=get_object_or_404(Project,pk=project_id,id__in=miprojects)
         form = formProjects(request.POST,instance=project)
         form.save()
         print(request.POST)
@@ -98,8 +103,8 @@ def update_project(request,project_id):
 
 @login_required
 def complete_project(request,project_id):
-    # project=get_object_or_404(Project,pk=project_id,user=request.user)
-    project=get_object_or_404(Project,pk=project_id)
+    miprojects=ProjectMember.objects.filter(user=request.user).values_list('project_id', flat=True)
+    project=get_object_or_404(Project,pk=project_id,id__in=miprojects)
     if request.method =='POST':
         project.datecompleted=timezone.now()
         project.save()
@@ -107,33 +112,36 @@ def complete_project(request,project_id):
 
 
 
-#API para eliminar la tarea
+#API para eliminar el proyecto
 
 @login_required
 def delete_project(request,project_id):
-    project=get_object_or_404(Project,pk=project_id)
+    miprojects=ProjectMember.objects.filter(user=request.user).values_list('project_id', flat=True)
+    project=get_object_or_404(Project,pk=project_id,id__in=miprojects)
     if request.method =='POST':
         project.delete()
         return redirect('view_project')
+
+
 
 
 @login_required
 def view_project_versions(request,project_id):
     if request.method=='GET':
         if project_id==0:
-            projects=Project.objects.all()
+            miprojects=ProjectMember.objects.filter(user=request.user).values_list('project_id', flat=True)
+            projects=Project.objects.filter(id__in=miprojects)
             return render(request,"select_pages.html",{
                 'projects':projects,
                 'redirect_funcion':'view_project_versions',
                 'seleccion':'project',
             })
         else:
-            project=get_object_or_404(Project,pk=project_id)
-            versions = ProjectVersion.objects.filter(project_id=project_id)
-            print(project)
+            project=get_object_or_404(ProjectMember,user=request.user,project_id=project_id)
+            versions = ProjectVersion.objects.filter(project_id=project.project_id)
             print(versions)
             return render(request,'project_version/view_project_versions.html',{
-                'project':project,
+                'project':project.project,
                 'versions':versions
                 })
 
@@ -142,7 +150,8 @@ def view_project_versions(request,project_id):
 def create_project_version(request,project_id):
     if request.method=='GET':
         if project_id==0:
-            projects=Project.objects.all()
+            miprojects=ProjectMember.objects.filter(user=request.user).values_list('project_id', flat=True)
+            projects=Project.objects.filter(id__in=miprojects)
             return render(request,"select_pages.html",{
                 'projects':projects,
                 'redirect_funcion':'create_project_version',
@@ -158,13 +167,14 @@ def create_project_version(request,project_id):
         try:
            
             form = formProjectVersions(request.POST)
-            newversion = form.save()
-            newversion.project=get_object_or_404(Project,pk=project_id)
+            newversion = form.save(commit=False)
+            project=get_object_or_404(ProjectMember,user=request.user,project_id=project_id)
+            newversion.project=get_object_or_404(Project,pk=project.project_id)
             newversion.save()
             return redirect('view_project_versions',project_id)
         except ValueError:
             return render(request,"project_version/create_project_version.html",{
-            'form':formProjectVersions,
+            'form':formProjectVersions,  
             'error':'ingresa datos validos'
             })
 
@@ -173,7 +183,9 @@ def create_project_version(request,project_id):
 @login_required
 def manage_project_version(request,project_id,project_version_id):
     if request.method=='GET':
-        project_version=get_object_or_404(ProjectVersion,pk=project_version_id,project=project_id)
+        miprojects=get_object_or_404(ProjectMember,user=request.user, project_id=project_id)
+        project=get_object_or_404(Project,pk=project_id,id=miprojects.project_id)
+        project_version=get_object_or_404(ProjectVersion,pk=project_version_id,project=project)
         form = formProjectVersions(instance=project_version)
         return render(request,'project_version/manage_project_version.html',
         {
@@ -189,7 +201,9 @@ def manage_project_version(request,project_id,project_version_id):
 @login_required
 def update_project_version(request,project_id,project_version_id):
     try:
-        project_version=get_object_or_404(ProjectVersion,pk=project_version_id,project_id=project_id)
+        miprojects=get_object_or_404(ProjectMember,user=request.user, project_id=project_id)
+        project=get_object_or_404(Project,pk=project_id,id=miprojects.project_id)
+        project_version=get_object_or_404(ProjectVersion,pk=project_version_id,project=project)
         form = formProjectVersions(request.POST,instance=project_version)
         form.save()
         print(request.POST)
@@ -206,7 +220,9 @@ def update_project_version(request,project_id,project_version_id):
 #API para eliminar la tarea
 @login_required
 def delete_project_version(request,project_id,project_version_id):
-    project_version=get_object_or_404(ProjectVersion,pk=project_version_id,project_id=project_version_id)
+    miprojects=get_object_or_404(ProjectMember,user=request.user, project_id=project_id)
+    project=get_object_or_404(Project,pk=project_id,id=miprojects.project_id)
+    project_version=get_object_or_404(ProjectVersion,pk=project_version_id,project=project)
     if request.method =='POST':
         project_version.delete()
         return redirect('view_project_versions',project_id)
@@ -219,16 +235,19 @@ def delete_project_version(request,project_id,project_version_id):
 def view_menbers_project(request,project_id):
     if request.method == 'GET':
         if project_id==0:
-            projects=Project.objects.all()
+            miprojects=ProjectMember.objects.filter(user=request.user).values_list('project_id', flat=True)
+            projects=Project.objects.filter(id__in=miprojects)
             return render(request,"select_pages.html",{
                 'projects':projects,
                 'redirect_funcion':'view_menbers_project',
                 'seleccion':'project',
             })
         else:
-            project=get_object_or_404(Project,pk=project_id)
-            members=ProjectMember.objects.filter(project_id=project_id)
-            return render(request,'member_project/view_members_project.html',{'project':project,'members':members})
+            # members=ProjectMember.objects.filter(project_id=project_id)
+            miprojects=ProjectMember.objects.filter(user=request.user,project_id=project_id).values_list('project_id', flat=True)
+            project=get_object_or_404(Project,pk=project_id,id__in=miprojects)
+            menbers=ProjectMember.objects.filter(project_id__in=miprojects)
+            return render(request,'member_project/view_members_project.html',{'project':project,'members':menbers})
 
 
 
@@ -239,7 +258,8 @@ def view_menbers_project(request,project_id):
 def create_members_project(request,project_id):
     if request.method == 'GET':
         if project_id==0:
-            projects=Project.objects.all()
+            miprojects=ProjectMember.objects.filter(user=request.user).values_list('project_id', flat=True)
+            projects=Project.objects.filter(id__in=miprojects)
             return render(request,"select_pages.html",{
                 'projects':projects,
                 'redirect_funcion':'create_members_project',
@@ -252,13 +272,19 @@ def create_members_project(request,project_id):
             })
     else:
         try:
-            
-            form = FormProjectMember(request.POST)
-            project = get_object_or_404(Project, id=project_id)
-            new_member = form.save(commit=False)
-            new_member.project = project
-            new_member.save()
-            return redirect('view_project')
+            miprojects=get_object_or_404(ProjectMember,user=request.user,project_id=project_id)
+            if miprojects:
+                form = FormProjectMember(request.POST)
+                project = get_object_or_404(Project, id=project_id)
+                new_member = form.save(commit=False)
+                new_member.project = project
+                new_member.save()
+                return redirect('view_project')
+            else:
+                return render(request, 'member_project/create_members_project.html', {
+                'form': FormProjectMember,
+                'error':'este no su proyecto'
+            })
         except ValueError:
             return render(request,"member_project/create_members_project.html",{
             'form':FormProjectMember,
@@ -270,18 +296,19 @@ def create_members_project(request,project_id):
 def manage_members_project(request,project_id,member_id):
     if request.method == 'GET':
         if project_id==0:
-            projects=Project.objects.all()
+            miprojects=ProjectMember.objects.filter(user=request.user).values_list('project_id', flat=True)
+            projects=Project.objects.filter(id__in=miprojects)
             return render(request,"view_menbers_project",{
                 'projects':projects,
                 'redirect_funcion':'manage_members_project',
             })
         else:
-            project=get_object_or_404(Project,pk=project_id)
-            member=get_object_or_404(ProjectMember,pk=member_id)
+            member=get_object_or_404(ProjectMember,user=request.user,project_id=project_id)
+            member=get_object_or_404(ProjectMember,project_id=project_id,pk=member_id)
             form = FormProjectMember(instance=member)
             return render(request,'member_project/manage_members_project.html',
             {
-                'project':project,
+                'project':member.project,
                 'member':member,
                 'form':form
             })
@@ -290,8 +317,8 @@ def manage_members_project(request,project_id,member_id):
 
 def update_members_project(request,project_id,member_id):
     try:
-        project=get_object_or_404(Project,pk=project_id)
-        member=get_object_or_404(ProjectMember,pk=member_id)
+        member=get_object_or_404(ProjectMember,user=request.user,project_id=project_id)
+        member=get_object_or_404(ProjectMember,project_id=project_id,pk=member_id)
         form = FormProjectMember(request.POST,instance=member)
         form.save()
         print(request.POST)
@@ -299,7 +326,7 @@ def update_members_project(request,project_id,member_id):
     except ValueError:
         return render(request,'member_project/manage_members_project.html',
         {
-            'project':project,
+            'project':member.project,
             'member':member,
             'form':form,
             'error':'error actualizar miembros'
@@ -309,7 +336,8 @@ def update_members_project(request,project_id,member_id):
 
 def delete_members_project(request,project_id,member_id):
     if request.method == 'POST':
-        member=get_object_or_404(ProjectMember,pk=member_id,project_id=project_id)
+        member=get_object_or_404(ProjectMember,user=request.user,project_id=project_id)
+        member=get_object_or_404(ProjectMember,project_id=project_id,pk=member_id)
         member.delete()
         return redirect('view_menbers_project',project_id)
 
