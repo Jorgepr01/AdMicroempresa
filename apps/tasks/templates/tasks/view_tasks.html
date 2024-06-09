@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="display-9 text-center mt-2">Vista del tarea</h1>
+<h1 class="display-9 text-center mt-2">{{task_view_type}}</h1>
 <hr>
 <div class="d-flex flex-wrap ">
 {% for task in tasks %}
@@ -11,11 +11,14 @@
     <div class="card-body">
       <h5 class="card-title">{{task.name}}</h5>
         <p class="card-text">{{task.description}}</p>
-      <a href="{% url "manage_task" task.id%}" class="btn btn-primary">Manage</a>
-      <form action="{% url "complete_task" task.id%}" method='post'>
-        {% csrf_token %}
-        <input type="submit" value="Completed" class="btn btn-success mt-2">
-      </form>    
+        <a href="{% url 'manage_task' task.id %}" class="btn btn-primary d-inline-block">Manage</a>
+        <form action="{% url 'complete_task' task.id %}" method="post" class="d-inline-block ml-2">
+            {% csrf_token %}
+            <input type="submit" value="Completed" class="btn btn-success">
+        </form>
+        
+        
+      
     </div>
     <div class="card-footer text-muted">
         {{task.created_at}} -- Completed: {{task.completed_at}}

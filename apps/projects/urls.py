@@ -15,7 +15,6 @@ urlpatterns = [
     path("project/version/manage/<int:project_id>/<int:project_version_id>", views.manage_project_version, name="manage_project_version"),
     path("project/version/update/<int:project_id>/<int:project_version_id>", views.update_project_version, name="update_project_version"),
     path("project/version/delete/<int:project_id>/<int:project_version_id>", views.delete_project_version, name="delete_project_version"),
-    
     path("project/member/<int:project_id>", views.view_menbers_project, name="view_menbers_project"),
     path("project/member/create/<int:project_id>", views.create_members_project, name="create_members_project"),
     path("project/member/manage/<int:project_id>/<int:member_id>", views.manage_members_project, name="manage_members_project"),
