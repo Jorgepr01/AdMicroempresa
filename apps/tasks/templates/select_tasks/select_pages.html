@@ -1,9 +1,9 @@
 {% extends "base.html" %} {% block content %}
 
 <div class="container mt-2">
-<label for="seleccionarPagina" class="form-label display-6">Selecciona tasks para ver sus versiones...</label>
+<label for="seleccionarPagina" class="form-label display-6">Selecciona la tarea que decea modificar.</label>
 <select id="seleccionarPagina" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
-    <option value="">Selecciona proyecto para ver sus versiones...</option>
+    <option value="">Selecciona Tareas para acceder a elllas</option>
     {% for task in tasks %}
     <option value="{% url redirect_funcion task.id %}">{{ task.name }}</option>
     {% endfor %}

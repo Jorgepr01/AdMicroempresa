@@ -66,7 +66,8 @@
                   Tasks
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                  <li><a class="dropdown-item" href="{% url "view_tasks" %}">View tasks</a></li>
+                  <li><a class="dropdown-item" href="{% url "view_tasks" 0 %}">View tasks</a></li>
+                  <li><a class="dropdown-item" href="{% url "view_completed_tasks" 0 %}">View tasks completed</a></li>
                   <li><a class="dropdown-item" href="{% url "create_task" %}">Create tasks</a></li>
                   <li><a class="dropdown-item" href="{% url "manage_task" 0 %}">Manage tasks</a></li>
                 </ul>
@@ -92,7 +93,7 @@
                 </a>
                 <ul class="dropdown-menu text-small shadow avatar" aria-labelledby="dropdownUser2" data-popper-placement="bottom-end" >
                   <li><a class="dropdown-item" href="{% url "create_project" %}">New project...</a></li>
-                  <li><a class="dropdown-item" href="#">Settings</a></li>
+                  <li><a class="dropdown-item" href="{% url "view_all_tasks" 0 %}">View all my tasks</a></li>
                   <li><a class="dropdown-item" href="#">Profile</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="{% url "signout" %}">Sign out</a></li>

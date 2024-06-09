@@ -29,8 +29,9 @@
     <div class="card-body">
       <h5 class="card-title">{{project.name}}</h5>
         <p class="card-text">{{version.notes}}</p>
-      <a href="{% url "manage_project_version" project.id version.id %}" class="btn btn-primary">Manage</a>
-      <a href="{% url "view_tasks" %}" class="btn btn-secondary text-white">View Tasks</a>
+      <a href="{% url "manage_project_version" project.id version.id %}" role="button" class="btn btn-primary">Manage</a>
+      <a href="{% url "view_tasks" version.id %}" class="btn btn-secondary text-white" role="button">View Tasks</a>
+      <a href="{% url "view_tasks" version.id %}" class="btn btn-success text-white" role="button">Create Tasks</a>
     </div>
     <div class="card-footer text-muted">
         {{version.created_at}}

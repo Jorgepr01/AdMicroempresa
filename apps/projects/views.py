@@ -37,9 +37,7 @@ def create_projects(request):
             newtasks = form.save()
             # newtasks.user= request.user
             newtasks.save()
-            print(newtasks.id)
             menbAdmin=ProjectMember(user=request.user,project_id=newtasks.id,role='Admin')
-            print(menbAdmin)
             menbAdmin.save()
             return redirect('view_project')
         except ValueError:
@@ -52,7 +50,6 @@ def create_projects(request):
 @login_required
 def view_project(request):
     miprojects=ProjectMember.objects.filter(user=request.user).values_list('project_id', flat=True)
-    print(miprojects)
     project=Project.objects.filter(id__in=miprojects)
     return render(request, 'project/view_project.html',{'project':project})
 
@@ -90,7 +87,6 @@ def update_project(request,project_id):
         project=get_object_or_404(Project,pk=project_id,id__in=miprojects)
         form = formProjects(request.POST,instance=project)
         form.save()
-        print(request.POST)
         return redirect('view_project')
     except ValueError:
         return render(request,'project/manage_project.html',
@@ -139,7 +135,6 @@ def view_project_versions(request,project_id):
         else:
             project=get_object_or_404(ProjectMember,user=request.user,project_id=project_id)
             versions = ProjectVersion.objects.filter(project_id=project.project_id)
-            print(versions)
             return render(request,'project_version/view_project_versions.html',{
                 'project':project.project,
                 'versions':versions
@@ -206,7 +201,6 @@ def update_project_version(request,project_id,project_version_id):
         project_version=get_object_or_404(ProjectVersion,pk=project_version_id,project=project)
         form = formProjectVersions(request.POST,instance=project_version)
         form.save()
-        print(request.POST)
         return redirect('view_project_versions',project_id)
     except ValueError:
         return render(request,'project_version/manage_project_version.html',
@@ -321,7 +315,6 @@ def update_members_project(request,project_id,member_id):
         member=get_object_or_404(ProjectMember,project_id=project_id,pk=member_id)
         form = FormProjectMember(request.POST,instance=member)
         form.save()
-        print(request.POST)
         return redirect('view_menbers_project',project_id)
     except ValueError:
         return render(request,'member_project/manage_members_project.html',
