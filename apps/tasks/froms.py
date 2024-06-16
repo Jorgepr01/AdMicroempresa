@@ -21,37 +21,7 @@ class TaskForm(forms.ModelForm):
 
 
 
-        ## esta es una forma echa por chat gpt tiene todo el merito :)
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        super(TaskForm, self).__init__(*args, **kwargs)
-        if user:
-            # Filtrar las versiones del proyecto basadas en el usuario
-            self.fields['project_version'].queryset = ProjectVersion.objects.filter(
-                project__projectmember__user=user
-            )
-
-            # Obtener miembros del proyecto basados en el usuario
-            project_members = ProjectMember.objects.filter(project__projectmember__user=user)
-
-            # Usar un set para obtener IDs únicos de usuarios
-            unique_user_ids = set()
-            for member in project_members:
-                unique_user_ids.add(member.user.id)
-
-            # Crear un queryset a partir de los IDs únicos de usuarios
-            self.fields['assigned_to'].queryset = User.objects.filter(id__in=unique_user_ids)
-
-    def clean_assigned_to(self):
-        assigned_to = self.cleaned_data['assigned_to']
-        if not assigned_to:
-            raise forms.ValidationError("Este campo es obligatorio.")
-        return assigned_to
-    
-
-
-
-        ## esta era un forma gracias a chat gpt
+        ## esta es una forma echa por chat gpt tiene todo el merito :) este tiene un error xd 
     # def __init__(self, *args, **kwargs):
     #     user = kwargs.pop('user', None)
     #     super(TaskForm, self).__init__(*args, **kwargs)
@@ -64,16 +34,46 @@ class TaskForm(forms.ModelForm):
     #         # Obtener miembros del proyecto basados en el usuario
     #         project_members = ProjectMember.objects.filter(project__projectmember__user=user)
 
-    #         # Usar un set para eliminar duplicados
-    #         unique_member_ids = set()
-    #         unique_members = []
+    #         # Usar un set para obtener IDs únicos de usuarios
+    #         unique_user_ids = set()
     #         for member in project_members:
-    #             if member.user_id not in unique_member_ids:
-    #                 unique_member_ids.add(member.user_id)
-    #                 unique_members.append(member.id)
+    #             unique_user_ids.add(member.user.id)
 
-    #         # Crear un queryset a partir de los IDs únicos
-    #         self.fields['assigned_to'].queryset = ProjectMember.objects.filter(id__in=unique_members)
+    #         # Crear un queryset a partir de los IDs únicos de usuarios
+    #         self.fields['assigned_to'].queryset = User.objects.filter(id__in=unique_user_ids)
+
+    # def clean_assigned_to(self):
+    #     assigned_to = self.cleaned_data['assigned_to']
+    #     if not assigned_to:
+    #         raise forms.ValidationError("Este campo es obligatorio.")
+    #     return assigned_to
+    
+
+
+
+        ## esta era un forma gracias a chat gpt este es el bueno
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(TaskForm, self).__init__(*args, **kwargs)
+        if user:
+            # Filtrar las versiones del proyecto basadas en el usuario
+            self.fields['project_version'].queryset = ProjectVersion.objects.filter(
+                project__projectmember__user=user
+            )
+
+            # Obtener miembros del proyecto basados en el usuario
+            project_members = ProjectMember.objects.filter(project__projectmember__user=user)
+
+            # Usar un set para eliminar duplicados
+            unique_member_ids = set()
+            unique_members = []
+            for member in project_members:
+                if member.user_id not in unique_member_ids:
+                    unique_member_ids.add(member.user_id)
+                    unique_members.append(member.id)
+
+            # Crear un queryset a partir de los IDs únicos
+            self.fields['assigned_to'].queryset = ProjectMember.objects.filter(id__in=unique_members)
 
 
 
