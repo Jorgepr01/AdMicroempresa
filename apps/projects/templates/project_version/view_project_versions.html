@@ -31,7 +31,7 @@
         <p class="card-text">{{version.notes}}</p>
       <a href="{% url "manage_project_version" project.id version.id %}" role="button" class="btn btn-primary">Manage</a>
       <a href="{% url "view_tasks" version.id %}" class="btn btn-secondary text-white" role="button">View Tasks</a>
-      <a href="{% url "view_tasks" version.id %}" class="btn btn-success text-white" role="button">Create Tasks</a>
+      <a href="{% url "create_task" %}" class="btn btn-success text-white" role="button">Create Tasks</a>
     </div>
     <div class="card-footer text-muted">
         {{version.created_at}}
